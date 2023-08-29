@@ -5,7 +5,6 @@ export const Layout = styled.main`
   flex-direction: column;
   align-items: center;
   min-height: 100vh;
-  gap: 24px;
   padding: 0 15px;
   margin: 0 auto;
 
