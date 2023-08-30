@@ -13,7 +13,7 @@ export const SearchBar = ({ changeQuerry }) => {
       <SearchFormStyled
         onSubmit={evt => {
           evt.preventDefault();
-          if (evt.target.elements.query.value === '') {
+          if (evt.target.elements.query.value.trim() === '') {
             toast.error('Please complete the search field. ');
             return;
           }

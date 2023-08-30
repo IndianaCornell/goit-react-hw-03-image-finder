@@ -16,7 +16,6 @@ export class App extends Component {
     query: ``,
     page: 1,
     loading: false,
-    loadMore: false,
   };
 
   changeQuerry = newQuery => {
@@ -28,37 +27,38 @@ export class App extends Component {
     const { query: nextQuery, page: nextPage } = this.state;
 
     if (prevQuery !== nextQuery || prevPage !== nextPage) {
-      try {
-        this.setState({ loading: true });
-
-        const queryResult = await findImages(nextQuery, this.state.page);
-
-        if (this.state.page === 1 && queryResult.length !== 0) {
-          toast.success(`Here we go`, { autoClose: 1000 });
-        }
-
-        if (queryResult.length === 0) {
-          this.setState({
-            loading: false,
-            loadMore: false,
-          });
-          toast.error(`Sorry, there are no images for your request :C`);
-          return;
-        }
-
-        this.setState(prevstate => ({
-          images:
-            this.state.page > 1
-              ? [...prevstate.images, ...queryResult]
-              : queryResult,
-          loading: false,
-          loadMore: true,
-        }));
-      } catch (error) {
-        console.log(error);
-      }
+      this.loadResults();
     }
   }
+
+  loadResults = async () => {
+    try {
+      this.setState({ loading: true });
+      const queryResult = await findImages(this.state.query, this.state.page);
+
+      if (this.state.page === 1 && queryResult.length !== 0) {
+        toast.success(`Here we go`, { autoClose: 1000 });
+      }
+
+      if (queryResult.length === 0) {
+        this.setState({
+          loading: false,
+        });
+        toast.error(`Sorry, there are no images for your request :C`);
+        return;
+      }
+
+      this.setState(prevstate => ({
+        images:
+          this.state.page > 1
+            ? [...prevstate.images, ...queryResult]
+            : queryResult,
+        loading: false,
+      }));
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   handelLoadMore = () => {
     this.setState(prevstate => ({ page: prevstate.page + 1 }));
@@ -68,7 +68,7 @@ export class App extends Component {
     return (
       <Layout>
         <SearchBar changeQuerry={this.changeQuerry} />
-        {this.state.loading ? (
+        {this.state.loading && (
           <ColorRing
             visible={true}
             height="80"
@@ -78,13 +78,12 @@ export class App extends Component {
             wrapperClass="blocks-wrapper"
             colors={['#e15b64', '#f47e60', '#f8b26a', '#abbd81', '#849b87']}
           />
-        ) : (
+        )}
+        {this.state.images.length > 0 && (
           <ImageGallery imagesArr={this.state.images} />
-        )}{' '}
-        {this.state.images.length > 0 && this.state.loadMore ? (
+        )}
+        {this.state.images.length > 0 && this.state.images.length <= 16 && (
           <Loader nextPage={this.handelLoadMore} />
-        ) : (
-          ''
         )}
         <ToastContainer />
         <GlobalStyle />
