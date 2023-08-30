@@ -82,7 +82,7 @@ export class App extends Component {
         {this.state.images.length > 0 && (
           <ImageGallery imagesArr={this.state.images} />
         )}
-        {this.state.images.length > 0 && this.state.images.length <= 16 && (
+        {this.state.images.length !== 0 && this.state.images.length >= 16 && (
           <Loader nextPage={this.handelLoadMore} />
         )}
         <ToastContainer />
